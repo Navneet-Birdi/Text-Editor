@@ -18,12 +18,59 @@ module.exports = () => {
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
-      
+      //html plugin
+      new HtmlWebpackPlugin({
+        template: './index.html',
+        title: 'Editor'
+      }),
+      //manifest join
+      //new MiniCssExtractPlugin(),
+new WebpackPwaManifest({
+  name: 'JATE',
+  short_name: 'JATE',
+  description: 'Simple text editor',
+  background_color: '#7eb4e2',
+  theme_color: '#7eb4e2',
+  start_url: './',
+  publicPath: './',
+fingerprints: false,
+  icons:[{
+    src: path.resolve('./src/images/logo.png'),
+    sizes: [96,128,192,256,384,512],
+    destination: path.join('assets', 'icons'),
+
+},
+],
+}),
+
+      new InjectManifest({
+        swSrc: './src-sw.js',
+        swDest: 'service-worker.js',
+      }),
     ],
 
     module: {
       rules: [
-        
+        {
+          test: /\.css$/i,
+          use: ['style-loader', 'css-loader'],
+        },
+        {
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+type: 'src/images',
+        },
+        {
+          test: /\.m?js$/,
+          exclude: /node_modules/,
+          // We use babel-loader in order to use ES6.
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-env'],
+              plugins: ['@babel/plugin-proposal-object-rest-spread', '@babel/transform-runtime'],
+            },
+          },
+        },
       ],
     },
   };
